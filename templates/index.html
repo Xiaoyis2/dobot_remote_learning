@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dobot Control</title>
+    <script>
+        async function connectDobot() {
+            const response = await fetch('/connect', { method: 'POST' });
+            const result = await response.json();
+            displayMessage(result.message);
+        }
+
+        async function moveCartesian() {
+            const x = parseFloat(document.getElementById('x').value);
+            const y = parseFloat(document.getElementById('y').value);
+            const z = parseFloat(document.getElementById('z').value);
+            const r = parseFloat(document.getElementById('r').value);
+            const response = await fetch('/move_cartesian', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ x, y, z, r })
+            });
+            const result = await response.json();
+            displayMessage(result.message);
+        }
+
+        async function moveJoint() {
+            const j1 = parseFloat(document.getElementById('j1').value);
+            const j2 = parseFloat(document.getElementById('j2').value);
+            const j3 = parseFloat(document.getElementById('j3').value);
+            const j4 = parseFloat(document.getElementById('j4').value);
+            const response = await fetch('/move_joint', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ j1, j2, j3, j4 })
+            });
+            const result = await response.json();
+            displayMessage(result.message);
+        }
+
+        async function controlSuction(enable) {
+            const response = await fetch('/suction', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ enable })
+            });
+            const result = await response.json();
+            displayMessage(result.message);
+        }
+
+        async function getPose() {
+            const response = await fetch('/pose');
+            const pose = await response.json();
+
+            // Update input fields with the fetched pose values
+            document.getElementById('x').value = pose.x;
+            document.getElementById('y').value = pose.y;
+            document.getElementById('z').value = pose.z;
+            document.getElementById('r').value = pose.r;
+            document.getElementById('j1').value = pose.j1;
+            document.getElementById('j2').value = pose.j2;
+            document.getElementById('j3').value = pose.j3;
+            document.getElementById('j4').value = pose.j4;
+
+            displayMessage('Current pose updated in input fields.');
+        }
+
+        async function homeDobot() {
+            const response = await fetch('/home', { method: 'POST' });
+            const result = await response.json();
+            displayMessage(result.message);
+        }
+
+        async function disconnectDobot() {
+            const response = await fetch('/disconnect', { method: 'POST' });
+            const result = await response.json();
+            displayMessage(result.message);
+        }
+
+        function displayMessage(message) {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+        }
+    </script>
+</head>
+<body>
+    <h1>Dobot Remote Control</h1>
+    <div>
+        <h2>Control</h2>
+        <button onclick="connectDobot()">Connect</button>
+        <button onclick="disconnectDobot()">Disconnect</button>
+    </div>
+    <div>
+        <button onclick="getPose()">Get Pose</button>
+        <button onclick="homeDobot()">Home</button>
+    </div>
+    <div id="messageBox" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
+        <h2>Status</h2>
+        <p>Messages will appear here.</p>
+    </div>
+    <div>
+        <h2>Cartesian Coordinates</h2>
+        <label for="x">X:</label><input type="number" id="x" step="1"><br>
+        <label for="y">Y:</label><input type="number" id="y" step="1"><br>
+        <label for="z">Z:</label><input type="number" id="z" step="1"><br>
+        <label for="r">R:</label><input type="number" id="r" step="1"><br>
+        <button onclick="moveCartesian()">Move Cartesian</button>
+    </div>
+    <div>
+        <h2>Joint Coordinates</h2>
+        <label for="j1">J1:</label><input type="number" id="j1" step="1"><br>
+        <label for="j2">J2:</label><input type="number" id="j2" step="1"><br>
+        <label for="j3">J3:</label><input type="number" id="j3" step="1"><br>
+        <label for="j4">J4:</label><input type="number" id="j4" step="1"><br>
+        <button onclick="moveJoint()">Move Joint</button>
+    </div>
+    <div>
+        <h2>Suction</h2>
+        <button onclick="controlSuction(true)">Enable Suction</button>
+        <button onclick="controlSuction(false)">Disable Suction</button>
+    </div>
+</body>
+</html>
