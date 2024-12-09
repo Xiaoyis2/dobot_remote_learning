@@ -3,7 +3,7 @@ from pydobot import Dobot
 from serial.tools import list_ports
 
 # Initialize Flask app
-app = Flask(__name__)
+app = Flask('WebControl:5000')
 
 # List available ports and connect to Dobot
 ports = list_ports.comports()

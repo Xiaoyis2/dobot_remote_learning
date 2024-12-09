@@ -3,7 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dobot Control</title>
+    <title>Dobot Control with Live Stream</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            margin: 20px;
+        }
+        .controls, .stream {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .stream img {
+            width: 1296px;
+            height: 972px;
+            display: block;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input {
+            margin: 5px 0;
+            width: 100%;
+            padding: 8px;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Live Camera Stream -->
+    <div class="stream">
+        <h1>Live Camera Stream</h1>
+        <img src="http://localhost:8000/stream.mjpg" alt="Live Stream">
+    </div>
+
+    <!-- Control Panel -->
+    <div class="controls">
+        <h1>Dobot Control</h1>
+        <div>
+            <h2>Connection</h2>
+            <button onclick="connectDobot()">Connect</button>
+            <button onclick="disconnectDobot()">Disconnect</button>
+        </div>
+        <div>
+            <h2>Home and Pose</h2>
+            <button onclick="getPose()">Get Pose</button>
+            <button onclick="homeDobot()">Home</button>
+        </div>
+        <div>
+            <h2>Cartesian Coordinates</h2>
+            <label for="x">X:</label><input type="number" id="x" step="1"><br>
+            <label for="y">Y:</label><input type="number" id="y" step="1"><br>
+            <label for="z">Z:</label><input type="number" id="z" step="1"><br>
+            <label for="r">R:</label><input type="number" id="r" step="1"><br>
+            <button onclick="moveCartesian()">Move Cartesian</button>
+        </div>
+        <div>
+            <h2>Joint Coordinates</h2>
+            <label for="j1">J1:</label><input type="number" id="j1" step="1"><br>
+            <label for="j2">J2:</label><input type="number" id="j2" step="1"><br>
+            <label for="j3">J3:</label><input type="number" id="j3" step="1"><br>
+            <label for="j4">J4:</label><input type="number" id="j4" step="1"><br>
+            <button onclick="moveJoint()">Move Joint</button>
+        </div>
+        <div>
+            <h2>Suction</h2>
+            <button onclick="controlSuction(true)">Enable Suction</button>
+            <button onclick="controlSuction(false)">Disable Suction</button>
+        </div>
+        <div class="status" id="messageBox">
+            <h2>Status</h2>
+            <p>Messages will appear here.</p>
+        </div>
+    </div>
+
     <script>
         async function connectDobot() {
             const response = await fetch('/connect', { method: 'POST' });
@@ -53,7 +147,6 @@
             const response = await fetch('/pose');
             const pose = await response.json();
 
-            // Update input fields with the fetched pose values
             document.getElementById('x').value = pose.x;
             document.getElementById('y').value = pose.y;
             document.getElementById('z').value = pose.z;
@@ -83,42 +176,5 @@
             messageBox.textContent = message;
         }
     </script>
-</head>
-<body>
-    <h1>Dobot Remote Control</h1>
-    <div>
-        <h2>Control</h2>
-        <button onclick="connectDobot()">Connect</button>
-        <button onclick="disconnectDobot()">Disconnect</button>
-    </div>
-    <div>
-        <button onclick="getPose()">Get Pose</button>
-        <button onclick="homeDobot()">Home</button>
-    </div>
-    <div id="messageBox" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
-        <h2>Status</h2>
-        <p>Messages will appear here.</p>
-    </div>
-    <div>
-        <h2>Cartesian Coordinates</h2>
-        <label for="x">X:</label><input type="number" id="x" step="1"><br>
-        <label for="y">Y:</label><input type="number" id="y" step="1"><br>
-        <label for="z">Z:</label><input type="number" id="z" step="1"><br>
-        <label for="r">R:</label><input type="number" id="r" step="1"><br>
-        <button onclick="moveCartesian()">Move Cartesian</button>
-    </div>
-    <div>
-        <h2>Joint Coordinates</h2>
-        <label for="j1">J1:</label><input type="number" id="j1" step="1"><br>
-        <label for="j2">J2:</label><input type="number" id="j2" step="1"><br>
-        <label for="j3">J3:</label><input type="number" id="j3" step="1"><br>
-        <label for="j4">J4:</label><input type="number" id="j4" step="1"><br>
-        <button onclick="moveJoint()">Move Joint</button>
-    </div>
-    <div>
-        <h2>Suction</h2>
-        <button onclick="controlSuction(true)">Enable Suction</button>
-        <button onclick="controlSuction(false)">Disable Suction</button>
-    </div>
 </body>
 </html>
